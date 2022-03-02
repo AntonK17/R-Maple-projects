@@ -1,0 +1,32 @@
+{
+    "id": "CDA91AF6",
+    "path": null,
+    "project_path": null,
+    "type": "r_dataframe",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1600425850983.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "expression": "trees",
+        "caption": "trees",
+        "totalObservations": 31,
+        "displayedObservations": 31,
+        "variables": 3,
+        "cacheKey": "463EBA9A",
+        "object": "trees",
+        "environment": "package:datasets",
+        "contentUrl": "grid_resource/gridviewer.html?env=package%3Adatasets&obj=trees&cache_key=463EBA9A&max_cols=50",
+        "preview": 0
+    },
+    "folds": "",
+    "lastKnownWriteTime": 2459013923021809011,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1600425850983,
+    "read_only": false,
+    "read_only_alternatives": []
+}

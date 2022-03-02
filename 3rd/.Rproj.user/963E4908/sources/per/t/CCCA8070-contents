@@ -1,0 +1,160 @@
+x = c(1, 2, 0.4, -15)
+x
+sum(x)/length(x)
+mean(x)
+plot(x)
+
+data.frame()
+
+
+# F(t)=P(X<t)
+rbinom                            #Функции разбиения
+rnbinom
+rgeom
+runif
+rpois
+rhyper
+runif
+rexp
+rnorm
+rgamma
+
+x <- runif(100)
+x
+mean(x)
+mean( x^0.25/5)
+
+c
+
+dunif
+pnorm
+dpois
+qt
+rpois(1000, 7) 
+table( rpois(1000, 7) )
+ddd=dpois( 0:9, 3.14)*100
+ddd
+table(dpois( 0:8, 3.14)*100)
+
+mean(ddd)
+
+a<-rbinom(10,10,0.2)
+mean(a)
+a
+table(a)
+a
+rep(c(0,1,2,3),c(1,3,4,2))->a.fake  #Восстанавливаем выборку по группирован. данным
+mean(a.fake)
+a.fake
+
+x=5.1
+floor(x)                            #Взять целую часть
+
+a = sqrt(2)
+a
+x = a*1:500
+x
+x = x - floor(x)
+x
+
+hist(x, pr=TRUE, col="gold")        #Гистограмма
+curve( dunif(x), add=TRUE)          #Кривая
+# (x[n-1],x[n])
+plot( x[-500], x[-1])               #Можем использовать отриц. коэффициенты
+
+u = runif(1000)
+u
+x = sqrt(u)
+x
+hist(x, pr=TRUE, col="gray")
+curve( 2*x, add=TRUE)
+
+u=runif(100)^5
+u
+mean( u )
+hist(u, pr=TRUE, col='gold')
+u <- runif(100)^5
+u
+mean( u )
+u <- runif(100)^0.2/5
+u
+hist(u, pr=TRUE, col="gray")
+mean( u )
+
+ddd <- replicate(100, runif(100)^0.2/5)
+ddd
+
+mean( replicate( 100, max(runif(5))/5) )
+u<-( replicate( 100, max(runif(5))/5) )
+u
+hist(u, pr=TRUE, col="gray")
+
+I1 = replicate( 1000,  mean( runif(100)^5 ))          #Создать 1000 выборок по 100 эл.
+I2 = replicate( 1000,  mean( runif(100)^0.2/5 ))
+
+par(mfrow=c(2,1))
+hist(I1, pr=TRUE, col="gray", xlim=c(0.07, 0.26))
+abline(v=1/6, col="red", lwd=2)
+curve( dnorm(x, 1/6, sqrt( (1/11-(1/6)^2)/100)), add=TRUE, lwd=1.2, col="red")
+hist(I2, pr=TRUE, col="gray", xlim=c(0.07, 0.26))
+abline(v=1/6, col="red", lwd=2)
+
+gamma=0.95
+zq = qnorm( (1+gamma)/2 )
+I1[1]+ c( -zq, zq)*sqrt( (1/11-(1/6)^2)/100)
+
+integrate( function(x) x^5, 0, 1)
+
+1/6
+
+
+#ПРоБЫ
+
+x<- replicate(100, sum(runif(12)) - 6)
+x<- replicate(3,runif(12))
+x<- replicate( 4,  mean( runif(20) )) 
+x
+
+x<- rnorm(10000, 10,3)
+hist(x, pr=TRUE)
+curve(dnorm(x,10,3), col='red' , add=TRUE)
+ks.test(x,"pnorm", 10, 3)
+
+library("MASS")
+func.exp <- function() {
+  exp.params <- fitdistr(trees$Height, "exponential")$estimate #Вычисляем оценку для мат. ожид и дисперсии для Height
+  #Estimate даёт сами значения, но есть еще и отклонения (в скобочках) - ошибки при вычислении
+  xvals <- seq(60,90,.5) #значения по x для trees$Height
+  hist(trees$Height,probability=TRUE,col="grey",main="")
+  lines(xvals, dexp(xvals, rate=exp.params[1]))
+}
+?fitdistr
+?qnorm
+?pnorm
+?plot
+?lm
+
+gm <- 0.9
+f <- function(a) {
+  qnorm(gm + a, 0, 1)-qnorm(a, 0, 1)
+}
+curve(f, 0, 1 - gm)
+
+rx<-rnorm(1000,0,1)
+x<-pnorm(rx)
+x<-density(rx)
+plot(x)
+br<-qnorm(c(0.33,0.66),0,1)
+plot(density(rx),xlim=c(qnorm(0.33),qnorm(1-0.33)))
+
+
+qqnorm(iris$Sepal.Width)
+qqline(iris$Sepal.Width)
+
+cost = data.frame(x = c(1, 2, 3, 5, 10, 20, 30, 50, 100, 200), y = c(10.15, 5.52, 4.08, 2.85, 2.11,
+                                                                     1.62, 1.41, 1.30, 1.21, 1.15)); # кадр данных
+w = lm(y ~ x, cost)
+plot(cost$x, cost$y)
+abline(cost.lm, col="blue")
+
+?outer

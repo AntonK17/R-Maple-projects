@@ -1,0 +1,358 @@
+# построение эмпирической ф.р.
+#11111111111111111111111111111122222222222222222222
+x <- rnorm( 100, 1, 0.5)
+x.ecdf <- ecdf(x)
+x.ecdf(0)
+curve( x.ecdf, -2, 6)
+plot( x.ecdf )
+
+girth.ecdf <- ecdf(trees$Girth)
+plot( girth.ecdf )
+
+# P( 14<X<16) = F(16)-F(14)
+
+girth.ecdf(16)-girth.ecdf(14)
+diff( girth.ecdf(c(14, 16)) ) 
+# diff(  c(x1, x2, x3, ...)) ==> (x2-x1, x3-x2,...)
+
+# сходимость _________________________________
+y <- rexp(10000)
+curve(pexp(x), xlim=c(-0.5, 6.5), col="red")
+plot(ecdf(y[1:50]), add=TRUE, col="gray")
+plot(ecdf(y[1:250]), add=TRUE, col="lightblue")
+plot(ecdf(y[1:1000]), add=TRUE, col="brown")
+plot(ecdf(y), add=TRUE, col="green")
+
+# Пробуем ядра плотности ________________
+attach(trees)
+hist(Girth, pr=TRUE, col="gray")
+lines( density(Girth), col="blue")
+lines( density(Girth, kernel="rectangular"), col="brown")
+detach(trees)
+
+x <- rcauchy(10000)
+hist(x, pr=TRUE, col="gold", br=30)
+curve(dcauchy, add=TRUE, col="red", lwd=2)
+range(x)
+
+curve(dcauchy, -10, 10, col="red", lwd=2)
+xm <- replicate(1000, mean( rcauchy(10) ))
+hist(xm, pr=TRUE)
+range(xm)
+
+
+#Выборочные хар-ки: ______________________
+attach(iris)
+
+plot(density(Sepal.Width))
+mean( Sepal.Width )
+mean( Sepal.Width, trim = 0.1 )
+median( Sepal.Width )
+abline( v=mean(Sepal.Width) )
+abline( v=median(Sepal.Width), col="red" )
+var(Sepal.Width)
+sd(Sepal.Width)
+IQR(Sepal.Width)
+diff3.06+3*c(-0.44, 0.44)
+diff( ecdf(Sepal.Width)(c(3.06+3*c(-0.44, 0.44))))
+
+summary( Sepal.Width )
+boxplot( Sepal.Width )
+
+#2020-10-02________________________________________________________________________________
+
+?lapply
+
+library(EnvStats)
+
+rbind( sd=lapply(iris[1:4], sd),
+       sk=lapply(iris[1:4], skewness))
+
+with(iris, summary( iris[ Species=='setosa',   ]))
+with(iris, lapply( iris[ Species=='setosa', ], kurtosis))
+
+iris.setosa <- subset(iris, subset= (Species=='setosa'),
+                      select=c(Sepal.Width, Sepal.Length, Petal.Width, Petal.Length) )
+lapply( iris.setosa, mean)
+with(iris, tapply(Sepal.Width, Species, mean))
+aggregate(iris[1:4], by=list(iris$Species), mean)
+
+x.t <- table( rpois(100, lambda=5) )
+x.t
+rep( c(1:8, 10, 12, 100) ,  x.t)
+names(x.t)
+mean( rep( as.integer( names(x.t)),  x.t) )
+mean( rep( names(x.t),  x.t) )
+
+x.h <- hist(iris$Sepal.Width, pr=TRUE)
+str(x.h)
+x.mids <- x.h$breaks[-length(x.h$breaks)] + 0.5*diff(x.h$breaks)
+x.fake<-rep( x.mids, x.h$counts)
+mean(x.fake)
+mean(iris$Sepal.Width)
+sd(x.fake)
+sd(iris$Sepal.Width)
+
+x.fr <- x.h$counts
+x.fake <- numeric(sum(x.fr))
+j <- 1
+for(i in 1:length(x.fr) ){
+  #  print(c(j, j+x.fr[i]-1))
+  x.fake[j:(j+x.fr[i]-1)] <- runif(x.fr[i], x.h$breaks[i], x.h$breaks[i+1])
+  j <- j + x.fr[i]
+}
+mean(x.fake)
+sd(x.fake)
+"(2, 2.4]"
+
+boxplot( Sepal.Width ~ Species, horizontal=TRUE, data=iris)
+
+#2020-10-09_____________________________________________________________________________
+
+for( i in 1:20) {
+  x <- runif(100)
+  #plot(ecdf(x))
+  #curve( punif(x), add=TRUE, col="blue")
+  print(ks.test(x, punif)$p.value )
+}
+
+x <- replicate( 1000, sum(runif(12))-6)
+hist(x, pr=TRUE, col="gray", br=150)
+curve( dnorm(x), add=TRUE, col="blue"  )
+ks.test( x, pnorm)
+table( cut( x, br=c(-Inf, -2, 2, Inf)))/1000000
+pnorm(-2)
+1-pnorm(2)
+
+x <- replicate( 1000, sum(runif(4))-2)
+ks.test(x, pnorm, sd=sqrt(1/3))
+
+chisq.test( c(2048, 1992), p=c(0.5, 0.5))
+
+x <- replicate( 1000, sum(runif(4))-2)
+range(x)
+br <- c(-Inf, -1, -0.5, 0, 0.5, 1, Inf)
+x.t <- table( cut(x , br=br) )
+p0 <- diff( pnorm(br, sd=sqrt(1/3)) ); p0
+chisq.test( x.t, p=p0 )$residuals
+
+
+x <- rpois(100, 6)
+table(x)
+
+x<-runif(10, -1, 1)
+range(x)
+mean(x)+sd(x)*c(-sqrt(3), sqrt(3))
+
+
+library(fitdistrplus)
+msedist(iris$Sepal.Width[iris$Species=='versicolor'], 'norm')$estimate
+hist(iris$Sepal.Width[iris$Species=='versicolor'], pr=TRUE, col="gray")
+curve( dnorm(x, 2.7413, 0.4938), add=TRUE, col="blue")
+curve( dnorm(x, 2.77, 0.313), add=TRUE, col="red")
+
+ni <- c(96978 , 9240 , 708 , 43 , 9 )
+lmb <- mean( rep( 0:4, ni) )
+n.e <- sum(ni)*dpois(0:4, lmb)
+n.e[[5]] <- sum(ni)-sum(n.e[1:4])
+tab <- rbind(ni,n.e)
+tab
+
+# b = var(x)/mean(x)-1, a = mean(x)/b
+# dnbinom(....)
+
+#2020-10-16_____________________________________________________________________________
+
+xx <- rpois(1000, 5.43)
+Lpois <- function(x) {
+  Vectorize( function(y) sum(log(dpois(x, y)))/length(x) )
+}
+
+curve( Lpois(xx[1:10])(x), 4, 7, ylim=c(-3.2, -2.1), col="brown", ylab="" )
+abline(v=mean(xx[1:10]), col="brown", lty=6)
+curve( Lpois(xx[1:50])(x), add=TRUE, col="blue")
+abline(v=mean(xx[1:50]), col="blue", lty=6)
+curve( Lpois(xx[1:100])(x), add=TRUE, col="red")
+abline(v=mean(xx[1:100]), col="red", lty=6)
+curve( Lpois(xx[1:1000])(x), add=TRUE, col="green")
+abline(v=mean(xx[1:1000]), col="green", lty=6)
+abline(v=5.43) # true lambda
+
+set.seed(1)
+xx <- rnorm(500, mean=3.14, sd=0.5)
+aa <- seq(1.5, 4.5, by=0.075)
+sgm <- seq(0.1, 2, by=0.05)
+
+par(mfrow=c(1,1))
+
+par(mfrow=c(2,1))
+#
+LL <- outer( aa, sgm, Vectorize(function(a,s) {sum(log(dnorm(xx[1:10], a, s)))/10}) );  
+LL.r <- range(log(-LL));
+contour(x=aa,y=sgm,z=LL, 
+        levels=-exp(seq(LL.r[1], LL.r[2], len=20)))
+points(mean(xx[1:10]),sd(xx[1:10])*sqrt(10/9), bg="blue",pch=23)
+points(3.14,0.5, bg="red",pch=23)
+#
+LL <- outer( aa, sgm, Vectorize(function(a,s) {sum(log(dnorm(xx, a, s)))/length(xx)}) )
+LL.r <- range(log(-LL));
+contour(x=aa,y=sgm,z=LL, 
+        levels=-exp(seq(LL.r[1], LL.r[2], len=20)))
+points(mean(xx),sd(xx)*sqrt(500/499), bg="blue",pch=23)
+points(3.14,0.5, bg="red",pch=23)
+
+library(MASS)
+vals <- 0:4
+ni <- c(96978, 9240, 708, 43, 9 )
+x <- rep(vals, ni)
+fitdistr( x, "poisson") -> ins.pois; ins.pois
+fitdistr( x, "negative binomial") -> ins.nbin; ins.nbin
+rbind(ons    = ni,
+      e.pois = sum(ni)*dpois(vals, ins.pois$estimate[1]),
+      e.nb   = sum(ni)*dnbinom(vals, ins.nbin$estimate[1], mu=ins.nbin$estimate[2]))
+fitdistr(x, dpois, list(lambda=0.1)) # run numerical search
+
+x<- rnorm(100, 5, 5)
+fitdistr(x, "normal")$loglik
+cat('mean(x) = ',mean(x), '\tsd(x) = ',sd(x),'\n')
+fitdistr(x, dnorm, list(mean=3, sd=3))$loglik #both unknown
+fitdistr(x, dnorm, list(mean=3), sd=5) # sd is known
+
+
+
+
+
+attach(faithful)
+hist( waiting, pr=T, col="grey")
+lines( density(waiting), lwd=1.5)
+my.f <- function(x, m1, s1, m2, s2, a){
+  a*dnorm(x, m1, s1)+(1-a)*dnorm(x, m2, s2)
+}
+w.fit <- fitdistr(waiting, my.f,  list(m1=55, m2=80, s1=5, s2=7, a=0.3)); w.fit
+wp <- w.fit$estimate
+curve( my.f(x, wp[1], wp[3], wp[2], wp[4], wp[5]), lwd=2, add=TRUE, col="blue")
+detach( faithful )
+
+# Bayesian estimator
+p <- c(1/6, 1/6+0.05)
+q <- c(1-0.001, 0.001)* dbinom(2, 20, p) # k=2
+sum(p*q)/sum(q) # bayesian estimate
+mean( sample(p, 1000000, replace=TRUE, prob=q) )
+
+
+#2020-10-23________________________________________________________________________________
+
+curve( dbeta(x, 20.2, 52), 0, 1)
+
+library(LearnBayes)
+quantile1=list(p=.5,x=.3)
+quantile2=list(p=.9,x=.5)
+beta.select(quantile1,quantile2)
+mean( rbeta(1000, 14.26, 23.19) )
+curve( dbeta(x, 14.26, 23.19) , 0, 1, col="brown")
+abline(v=14.26/(14.26+23.19), col="red")
+abline(v=11/27, col="blue")
+
+data(footballscores)
+attach(footballscores)
+X = favorite - underdog - spread
+n = length(X)
+d = sum(X^2)
+hist(X, pr=TRUE, col="gray")
+lines(density(X), col="blue", lwd=1.5)
+P = rchisq(1000, n)/d
+mean(1/P)
+d/n
+var(X)
+s = sqrt(1/P) # sigma
+mean(s)
+curve( dnorm(x, sd=mean(s)), add=TRUE, col="brown", lwd=1.5)
+sd(X)
+hist(s,main="", col="grey")
+detach(footballscores)
+
+
+ue3 = function(n, a,b){
+  rn =  runif(n, a, b)
+  return(
+    c(min(rn), max(rn),
+      (n*min(rn)-max(rn))/(n-1), (n*max(rn)-min(rn))/(n-1), 
+      mean(rn)-sqrt(3)*sd(rn), mean(rn)+sqrt(3)*sd(rn)))
+}
+
+x1 = replicate(100, ue3(100, -1, 1))
+x1.m = apply(x1, 1, mean)
+x1.m
+plot( x1[1,], x1[2,], type="p", pch=22, bg="blue", xlim=c(-1.15, -0.75), ylim=c(0.75, 1.15))
+points(x1[3,], x1[4,], pch=23, bg="green")
+points(x1[5,], x1[6,], pch=23, bg="yellow")
+# marginal distributions for _a_
+par(mfrow=c(3,1))
+hist(x1[1,],pr=T,xlim=c(-1.5,-0.5),col="gray")
+abline(v=x1.m[1], col="red", lwd=3)
+hist(x1[3,],pr=T,xlim=c(-1.5,-0.5),col="gray")
+abline(v=x1.m[3], col="red", lwd=3)
+hist(x1[5,],pr=T,xlim=c(-1.5,-0.5),col="gray")
+abline(v=x1.m[5], col="red", lwd=3)
+
+ss <- function(n=10, a=0, sd=1){
+  x <- rnorm(n, a, sd)
+  s <- sqrt(mean((x-mean(x))^2))
+  return( sqrt(n)*(s-sd) )
+}
+
+par( mfrow=c(3,1) )
+y <- replicate( 1000, ss(n=10) )
+hist(y, pr=TRUE, br=30, col="grey", ylim=c(0, 0.65))
+curve( dnorm(x, 0, sd=sd(y)), add=TRUE, lwd=1.5, col="blue")
+y <- replicate( 1000, ss(n=40) )
+hist(y, pr=TRUE, br=30, col="grey", ylim=c(0, 0.65))
+curve( dnorm(x, 0, sd=sd(y)), add=TRUE, lwd=1.5, col="blue")
+y <- replicate( 1000, ss(n=500) )
+hist(y, pr=TRUE, br=30, col="grey", ylim=c(0, 0.65))
+curve( dnorm(x, 0, sd=sd(y)), add=TRUE, lwd=1.5, col="blue")
+
+library(MASS)
+x <- rpois(100, 3.25)
+fitdistr(x, "poisson")
+mean(x)
+sqrt(3.25)/sqrt(100)
+sqrt(3.31)/sqrt(100)
+
+
+#2020-12-04________________________________________________________________________________
+
+temprat <- read.table("temperature.txt", header=TRUE)
+plot( temprat[c(2,3)])
+
+summary( lm( Alatyr ~ Saratov, data=temprat) )
+abline(lm( Alatyr ~ Saratov, data=temprat))
+
+bread = c(46.2, 43.4, 37.8, 39.2, 42, 44.8)
+spirit = c(33, 31, 27, 28, 30, 32)
+plot(bread, spirit)
+abline( lm(spirit~bread))
+summary( lm(spirit~bread) )
+summary( lm(spirit~-1+bread) )
+sb.lm = lm(spirit~bread)
+update( sb.lm, . ~ . -1)
+
+
+with(trees, plot(Height, Volume))
+attach(trees)
+v.m <- by( Volume, cut(Height, br=seq(60, 90, by=5)),mean)
+lines(seq(62.5, 87.5, by=5), v.m, col="blue" )
+abline(lm( Volume ~ Height))
+summary( lm( Volume ~ Height) )
+
+x <- c(1, 2, 3, 5, 10, 20, 50, 100, 200)
+y <- c(10.15, 5.52, 4.08, 2.11, 1.62, 1.42, 1.30, 1.21, 1.15)
+plot(x,y)
+plot(1/x,y)
+z = 1/x
+summary( lm( y~z) )
+y.lm = lm( y ~ I(1/x) )
+summary(y.lm)
+lines(x, fitted(y.lm))
+qqnorm( resid(y.lm) )
+shapiro.test(resid(y.lm))
